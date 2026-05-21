@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'report_incident_screen.dart';
 import 'evacuation_centers_screen.dart';
 import 'map_screen.dart';
+import 'login_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -12,6 +13,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   static const Color primaryRed = Color(0xFFB71C1C);
 
@@ -48,7 +50,12 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       backgroundColor: const Color(0xFFF2F2F2),
+
+      // ── Right-side drawer ───────────────────────────────────────────────
+      endDrawer: _buildProfileDrawer(),
+
       body: Column(
         children: [
           _buildHeader(),
@@ -68,6 +75,221 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
       bottomNavigationBar: _buildBottomNav(),
+    );
+  }
+
+  // ── Profile Drawer ────────────────────────────────────────────────────────
+  Widget _buildProfileDrawer() {
+    return Drawer(
+      width: MediaQuery.of(context).size.width * 0.80,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(24),
+          bottomLeft: Radius.circular(24),
+        ),
+      ),
+      child: SafeArea(
+        child: Column(
+          children: [
+            const SizedBox(height: 32),
+
+            // ── Logo ──────────────────────────────────────────────────
+            Image.asset(
+              'assets/images/ilocos_logo.png',
+              width: 160,
+              height: 100,
+              fit: BoxFit.contain,
+            ),
+
+            const SizedBox(height: 8),
+
+            const Divider(
+              indent: 32,
+              endIndent: 32,
+              color: Color(0xFFEEEEEE),
+              thickness: 1,
+            ),
+
+            const SizedBox(height: 24),
+
+            // ── Avatar initials ───────────────────────────────────────
+            Container(
+              width: 90,
+              height: 90,
+              decoration: BoxDecoration(
+                color: const Color(0xFFFFCDD2),
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: const Color(0xFFEF9A9A),
+                  width: 2,
+                ),
+              ),
+              child: const Center(
+                child: Text(
+                  'JD',
+                  style: TextStyle(
+                    fontSize: 30,
+                    fontWeight: FontWeight.w800,
+                    color: Color(0xFFB71C1C),
+                  ),
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 16),
+
+            // ── Name ──────────────────────────────────────────────────
+            const Text(
+              'Jane Doe',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w800,
+                color: Colors.black87,
+              ),
+            ),
+
+            const SizedBox(height: 6),
+
+            // ── Email ─────────────────────────────────────────────────
+            const Text(
+              'jane_doe@gmail.com',
+              style: TextStyle(
+                fontSize: 13,
+                color: Colors.black54,
+              ),
+            ),
+
+            const SizedBox(height: 4),
+
+            // ── Phone ─────────────────────────────────────────────────
+            const Text(
+              '+63 912 345 6789',
+              style: TextStyle(
+                fontSize: 13,
+                color: Colors.black54,
+              ),
+            ),
+
+            const SizedBox(height: 4),
+
+            // ── Address ───────────────────────────────────────────────
+            const Text(
+              'Brgy. 1, Laoag City, Ilocos Norte',
+              style: TextStyle(
+                fontSize: 13,
+                color: Colors.black54,
+              ),
+            ),
+
+            const SizedBox(height: 24),
+
+            const Divider(
+              indent: 32,
+              endIndent: 32,
+              color: Color(0xFFEEEEEE),
+              thickness: 1,
+            ),
+
+            const Spacer(),
+
+            // ── Settings button ───────────────────────────────────────
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: GestureDetector(
+                onTap: () {
+                  // TODO: Navigate to Settings
+                },
+                child: Container(
+                  width: double.infinity,
+                  height: 50,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(
+                      color: Colors.grey.shade300,
+                      width: 1.2,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.04),
+                        blurRadius: 6,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.settings_outlined,
+                        size: 20,
+                        color: Colors.black54,
+                      ),
+                      SizedBox(width: 8),
+                      Text(
+                        'Settings',
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black87,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 14),
+
+            // ── Log Out button ────────────────────────────────────────
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: GestureDetector(
+                onTap: () {
+                  // Close drawer first, then navigate to Login
+                  Navigator.pop(context);
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const LoginScreen(),
+                    ),
+                        (route) => false,
+                  );
+                },
+                child: Container(
+                  width: double.infinity,
+                  height: 50,
+                  decoration: BoxDecoration(
+                    color: primaryRed,
+                    borderRadius: BorderRadius.circular(14),
+                    boxShadow: [
+                      BoxShadow(
+                        color: primaryRed.withOpacity(0.35),
+                        blurRadius: 8,
+                        offset: const Offset(0, 3),
+                      ),
+                    ],
+                  ),
+                  child: const Center(
+                    child: Text(
+                      'Log Out',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white,
+                        letterSpacing: 0.4,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 32),
+          ],
+        ),
+      ),
     );
   }
 
@@ -107,9 +329,11 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ],
           ),
+
+          // ── Hamburger → opens right drawer ───────────────────────────
           GestureDetector(
             onTap: () {
-              // TODO: Open drawer / menu
+              _scaffoldKey.currentState?.openEndDrawer();
             },
             child: Container(
               padding: const EdgeInsets.all(8),
@@ -346,25 +570,7 @@ class _HomeScreenState extends State<HomeScreen> {
             children: List.generate(items.length, (index) {
               final isSelected = _selectedIndex == index;
               return GestureDetector(
-                onTap: () {
-                  if (index == 0) return; // already home
-                  if (index == 1) {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => const ReportIncidentScreen()));
-                    return;
-                  }
-                  if (index == 2) {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => const MapScreen()));
-                    return;
-                  }
-                  if (index == 3) {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => const EvacuationCentersScreen()));
-                    return;
-                  }
-                  setState(() => _selectedIndex = index);
-                },
+                onTap: () => _onNavTap(index),
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 200),
                   padding: const EdgeInsets.symmetric(
@@ -403,5 +609,25 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
     );
+  }
+
+  void _onNavTap(int index) {
+    if (index == 0) return;
+    if (index == 1) {
+      Navigator.push(context,
+          MaterialPageRoute(builder: (context) => const ReportIncidentScreen()));
+      return;
+    }
+    if (index == 2) {
+      Navigator.push(context,
+          MaterialPageRoute(builder: (context) => const MapScreen()));
+      return;
+    }
+    if (index == 3) {
+      Navigator.push(context,
+          MaterialPageRoute(builder: (context) => const EvacuationCentersScreen()));
+      return;
+    }
+    setState(() => _selectedIndex = index);
   }
 }

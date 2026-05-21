@@ -4,6 +4,7 @@ import 'package:latlong2/latlong.dart';
 import 'home_screen.dart';
 import 'report_incident_screen.dart';
 import 'evacuation_centers_screen.dart';
+import 'login_screen.dart';
 
 class MapScreen extends StatefulWidget {
   const MapScreen({super.key});
@@ -14,44 +15,45 @@ class MapScreen extends StatefulWidget {
 
 class _MapScreenState extends State<MapScreen> {
   static const Color primaryRed = Color(0xFFB71C1C);
-  int _selectedIndex = 2; // Map is index 2
+  int _selectedIndex = 2;
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  // ── Marker data scattered around Ilocos Region ────────────────────────────
   final List<Map<String, dynamic>> _landslideMarkers = [
-    {'lat': 17.8956, 'lng': 120.6199}, // Bangui
-    {'lat': 17.5824, 'lng': 120.3847}, // Narvacan
-    {'lat': 17.4014, 'lng': 120.4506}, // Candon area
+    {'lat': 17.8956, 'lng': 120.6199},
+    {'lat': 17.5824, 'lng': 120.3847},
+    {'lat': 17.4014, 'lng': 120.4506},
   ];
 
   final List<Map<String, dynamic>> _evacuationMarkers = [
-    {'lat': 18.1975, 'lng': 120.5932}, // Laoag area
-    {'lat': 17.7430, 'lng': 120.4560}, // Vigan area
-    {'lat': 17.5200, 'lng': 120.3900}, // Tagudin area
+    {'lat': 18.1975, 'lng': 120.5932},
+    {'lat': 17.7430, 'lng': 120.4560},
+    {'lat': 17.5200, 'lng': 120.3900},
   ];
 
   final List<Map<String, dynamic>> _floodMarkers = [
-    {'lat': 18.0700, 'lng': 120.5500}, // South Laoag
-    {'lat': 17.9600, 'lng': 120.6100}, // Pasuquin area
-    {'lat': 17.6500, 'lng': 120.4100}, // Santa area
+    {'lat': 18.0700, 'lng': 120.5500},
+    {'lat': 17.9600, 'lng': 120.6100},
+    {'lat': 17.6500, 'lng': 120.4100},
   ];
 
   final List<Map<String, dynamic>> _safezoneMarkers = [
-    {'lat': 18.1700, 'lng': 120.5700}, // Laoag City
-    {'lat': 17.7200, 'lng': 120.4400}, // Vigan City
-    {'lat': 17.4500, 'lng': 120.4600}, // Candon City
+    {'lat': 18.1700, 'lng': 120.5700},
+    {'lat': 17.7200, 'lng': 120.4400},
+    {'lat': 17.4500, 'lng': 120.4600},
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       backgroundColor: const Color(0xFFF2F2F2),
+      endDrawer: _buildProfileDrawer(),
       body: Column(
         children: [
           _buildHeader(),
           Expanded(
             child: Stack(
               children: [
-                // ── Flutter Map ─────────────────────────────────────────
                 FlutterMap(
                   options: const MapOptions(
                     initialCenter: LatLng(17.8, 120.52),
@@ -60,14 +62,11 @@ class _MapScreenState extends State<MapScreen> {
                     maxZoom: 15.0,
                   ),
                   children: [
-                    // OpenStreetMap tiles — free, no API key needed
                     TileLayer(
                       urlTemplate:
                       'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                       userAgentPackageName: 'com.ilocos.ilocoalisto',
                     ),
-
-                    // ── Markers ─────────────────────────────────────────
                     MarkerLayer(
                       markers: [
                         ..._buildMarkers(
@@ -98,8 +97,6 @@ class _MapScreenState extends State<MapScreen> {
                     ),
                   ],
                 ),
-
-                // ── Map Legend overlay ──────────────────────────────────
                 Positioned(
                   bottom: 0,
                   left: 0,
@@ -112,6 +109,165 @@ class _MapScreenState extends State<MapScreen> {
         ],
       ),
       bottomNavigationBar: _buildBottomNav(),
+    );
+  }
+
+  // ── Profile Drawer ────────────────────────────────────────────────────────
+  Widget _buildProfileDrawer() {
+    return Drawer(
+      width: MediaQuery.of(context).size.width * 0.80,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(24),
+          bottomLeft: Radius.circular(24),
+        ),
+      ),
+      child: SafeArea(
+        child: Column(
+          children: [
+            const SizedBox(height: 32),
+            Image.asset(
+              'assets/images/ilocos_logo.png',
+              width: 160,
+              height: 100,
+              fit: BoxFit.contain,
+            ),
+            const SizedBox(height: 8),
+            const Divider(
+                indent: 32, endIndent: 32,
+                color: Color(0xFFEEEEEE), thickness: 1),
+            const SizedBox(height: 24),
+
+            // Avatar
+            Container(
+              width: 90,
+              height: 90,
+              decoration: BoxDecoration(
+                color: const Color(0xFFFFCDD2),
+                shape: BoxShape.circle,
+                border: Border.all(color: const Color(0xFFEF9A9A), width: 2),
+              ),
+              child: const Center(
+                child: Text(
+                  'JD',
+                  style: TextStyle(
+                    fontSize: 30,
+                    fontWeight: FontWeight.w800,
+                    color: Color(0xFFB71C1C),
+                  ),
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 16),
+            const Text('Jane Doe',
+                style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w800,
+                    color: Colors.black87)),
+            const SizedBox(height: 6),
+            const Text('jane_doe@gmail.com',
+                style: TextStyle(fontSize: 13, color: Colors.black54)),
+            const SizedBox(height: 4),
+            const Text('+63 912 345 6789',
+                style: TextStyle(fontSize: 13, color: Colors.black54)),
+            const SizedBox(height: 4),
+            const Text('Brgy. 1, Laoag City, Ilocos Norte',
+                style: TextStyle(fontSize: 13, color: Colors.black54)),
+            const SizedBox(height: 24),
+            const Divider(
+                indent: 32, endIndent: 32,
+                color: Color(0xFFEEEEEE), thickness: 1),
+            const Spacer(),
+
+            // Settings button
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: GestureDetector(
+                onTap: () {
+                  // TODO: Navigate to Settings
+                },
+                child: Container(
+                  width: double.infinity,
+                  height: 50,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(
+                        color: Colors.grey.shade300, width: 1.2),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.04),
+                        blurRadius: 6,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.settings_outlined,
+                          size: 20, color: Colors.black54),
+                      SizedBox(width: 8),
+                      Text('Settings',
+                          style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.black87)),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 14),
+
+            // Log Out button
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const LoginScreen()),
+                        (route) => false,
+                  );
+                },
+                child: Container(
+                  width: double.infinity,
+                  height: 50,
+                  decoration: BoxDecoration(
+                    color: primaryRed,
+                    borderRadius: BorderRadius.circular(14),
+                    boxShadow: [
+                      BoxShadow(
+                        color: primaryRed.withOpacity(0.35),
+                        blurRadius: 8,
+                        offset: const Offset(0, 3),
+                      ),
+                    ],
+                  ),
+                  child: const Center(
+                    child: Text(
+                      'Log Out',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white,
+                        letterSpacing: 0.4,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 32),
+          ],
+        ),
+      ),
     );
   }
 
@@ -183,9 +339,7 @@ class _MapScreenState extends State<MapScreen> {
             ],
           ),
           GestureDetector(
-            onTap: () {
-              // TODO: Open drawer / menu
-            },
+            onTap: () => _scaffoldKey.currentState?.openEndDrawer(),
             child: Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
@@ -231,41 +385,32 @@ class _MapScreenState extends State<MapScreen> {
           const SizedBox(height: 10),
           Row(
             children: [
-              // Left column
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     _buildLegendItem(
-                      Icons.warning_rounded,
-                      const Color(0xFFFF9800),
-                      'Landslide',
-                    ),
+                        Icons.warning_rounded,
+                        const Color(0xFFFF9800),
+                        'Landslide'),
                     const SizedBox(height: 8),
-                    _buildLegendItem(
-                      Icons.water,
-                      primaryRed,
-                      'Flood',
-                    ),
+                    _buildLegendItem(Icons.water, primaryRed, 'Flood'),
                   ],
                 ),
               ),
-              // Right column
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     _buildLegendItem(
-                      Icons.local_hospital_outlined,
-                      const Color(0xFF1565C0),
-                      'Evacuation',
-                    ),
+                        Icons.local_hospital_outlined,
+                        const Color(0xFF1565C0),
+                        'Evacuation'),
                     const SizedBox(height: 8),
                     _buildLegendItem(
-                      Icons.shield_outlined,
-                      const Color(0xFF2E7D32),
-                      'Safezone',
-                    ),
+                        Icons.shield_outlined,
+                        const Color(0xFF2E7D32),
+                        'Safezone'),
                   ],
                 ),
               ),
@@ -379,7 +524,7 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   void _onNavTap(int index) {
-    if (index == 2) return; // already on Map
+    if (index == 2) return;
     if (index == 0) {
       Navigator.pushAndRemoveUntil(
         context,
@@ -389,18 +534,15 @@ class _MapScreenState extends State<MapScreen> {
       return;
     }
     if (index == 1) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => const ReportIncidentScreen()),
-      );
+      Navigator.push(context,
+          MaterialPageRoute(
+              builder: (context) => const ReportIncidentScreen()));
       return;
     }
     if (index == 3) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => const EvacuationCentersScreen()),
-      );
+      Navigator.push(context,
+          MaterialPageRoute(
+              builder: (context) => const EvacuationCentersScreen()));
       return;
     }
   }
